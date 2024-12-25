@@ -46,7 +46,7 @@ local function getResponse(message)
     elseif string.find(lowerMessage, "bye") then
         return "Goodbye! Have a great day!"
     else
-        return "I'm sorry, I don't understand. Can you rephrase?"
+        return "I don't understand that. Could you try saying it differently?"
     end
 end
 
