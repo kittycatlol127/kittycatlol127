@@ -1,6 +1,5 @@
 -- LocalScript: StarterPlayerScripts
 
--- Check if the player is on a mobile device
 if game:GetService("UserInputService").TouchEnabled then
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
@@ -39,22 +38,45 @@ if game:GetService("UserInputService").TouchEnabled then
     stopButton.BackgroundColor3 = Color3.new(0.5, 0, 0)
     stopButton.TextColor3 = Color3.new(1, 1, 1)
 
-    -- Fly Logic
+    -- Flying Logic
     local flying = false
     local speed = 50
+    local bodyGyro = Instance.new("BodyGyro")
+    local bodyVelocity = Instance.new("BodyVelocity")
+
+    bodyGyro.MaxTorque = Vector3.new(1e6, 1e6, 1e6) -- Allow rotation in all axes
+    bodyGyro.P = 3e4
+    bodyGyro.D = 100
+
+    bodyVelocity.MaxForce = Vector3.new(1e6, 1e6, 1e6) -- Allow movement in all directions
+    bodyVelocity.P = 1e4
 
     local function startFlying()
         flying = true
+        bodyGyro.Parent = rootPart
+        bodyVelocity.Parent = rootPart
+
         while flying do
             task.wait()
-            local direction = humanoid.MoveDirection
-            rootPart.Velocity = Vector3.new(direction.X * speed, speed, direction.Z * speed)
+
+            -- Get movement direction and rotation
+            local moveDirection = humanoid.MoveDirection
+            local lookVector = rootPart.CFrame.LookVector
+
+            -- Set velocity based on input direction
+            bodyVelocity.Velocity = (lookVector * moveDirection.Magnitude * speed) + Vector3.new(0, moveDirection.Y * speed, 0)
+
+            -- Rotate towards the movement direction
+            if moveDirection.Magnitude > 0 then
+                bodyGyro.CFrame = CFrame.new(rootPart.Position, rootPart.Position + moveDirection)
+            end
         end
     end
 
     local function stopFlying()
         flying = false
-        rootPart.Velocity = Vector3.zero
+        bodyVelocity:Destroy()
+        bodyGyro:Destroy()
     end
 
     -- Button Events
