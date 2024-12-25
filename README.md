@@ -1,66 +1,102 @@
--- LocalScript: StarterPlayerScripts
+local TweenService = game:GetService("TweenService")
+local Players = game:GetService("Players")
+local UserInputService = game:GetService("UserInputService")
 
--- Create the Screen GUI
-local screenGui = Instance.new("ScreenGui")
-screenGui.Name = "ChatAI"
-screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
+-- Create ScreenGui
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Create the Frame for the Chatbox
-local chatFrame = Instance.new("Frame", screenGui)
-chatFrame.Size = UDim2.new(0.4, 0, 0.3, 0)
-chatFrame.Position = UDim2.new(0.3, 0, 0.6, 0)
-chatFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
-chatFrame.BorderSizePixel = 0
+-- Create Loading Screen
+local LoadingScreen = Instance.new("Frame")
+LoadingScreen.Size = UDim2.new(1, 0, 1, 0)
+LoadingScreen.BackgroundColor3 = Color3.fromRGB(0, 0, 0)
+LoadingScreen.Parent = ScreenGui
 
--- Create a TextBox for Player Input
-local inputBox = Instance.new("TextBox", chatFrame)
-inputBox.Size = UDim2.new(0.8, 0, 0.2, 0)
-inputBox.Position = UDim2.new(0.1, 0, 0.7, 0)
-inputBox.PlaceholderText = "Type your message here..."
-inputBox.Text = ""
-inputBox.TextScaled = true
-inputBox.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
-inputBox.TextColor3 = Color3.new(1, 1, 1)
-inputBox.BorderSizePixel = 0
+local LoadingText = Instance.new("TextLabel")
+LoadingText.Size = UDim2.new(1, 0, 0.1, 0)
+LoadingText.Position = UDim2.new(0, 0, 0.45, 0)
+LoadingText.BackgroundTransparency = 1
+LoadingText.TextColor3 = Color3.fromRGB(255, 255, 255)
+LoadingText.Text = "Made by Voorlove Music. Subscribe to my channel!"
+LoadingText.Font = Enum.Font.GothamBold
+LoadingText.TextSize = 20
+LoadingText.Parent = LoadingScreen
 
--- Create a TextLabel for AI Responses
-local responseLabel = Instance.new("TextLabel", chatFrame)
-responseLabel.Size = UDim2.new(0.8, 0, 0.5, 0)
-responseLabel.Position = UDim2.new(0.1, 0, 0.1, 0)
-responseLabel.Text = "Hello! How can I help you today?"
-responseLabel.TextScaled = true
-responseLabel.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
-responseLabel.TextColor3 = Color3.new(1, 1, 1)
-responseLabel.BorderSizePixel = 0
+-- Tween for loading text
+local tweenInfo = TweenInfo.new(1, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+local tweenIn = TweenService:Create(LoadingText, tweenInfo, {TextTransparency = 0})
+local tweenOut = TweenService:Create(LoadingText, tweenInfo, {TextTransparency = 1})
 
--- Function to Handle AI Responses
-local function getResponse(message)
-    local lowerMessage = string.lower(message) -- Convert message to lowercase for easier comparison
+-- Create Frame for the main GUI (smaller size)
+local Frame = Instance.new("Frame")
+Frame.Size = UDim2.new(0.3, 0, 0.3, 0) -- Adjusted size
+Frame.Position = UDim2.new(0.35, 0, 0.35, 0)
+Frame.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+Frame.Visible = false  -- Start hidden
+Frame.Parent = ScreenGui
 
-    if string.find(lowerMessage, "hello") then
-        return "Hi there! How are you?"
-    elseif string.find(lowerMessage, "how are you") then
-        return "I'm just a script, but I'm here to help!"
-    elseif string.find(lowerMessage, "help") then
-        return "What do you need help with?"
-    elseif string.find(lowerMessage, "bye") then
-        return "Goodbye! Have a great day!"
-    else
-        return "I don't understand that. Could you try saying it differently?"
-    end
-end
+-- Create TextBox for amount to steal
+local amountTextBox = Instance.new("TextBox")
+amountTextBox.Size = UDim2.new(0.8, 0, 0.2, 0)
+amountTextBox.Position = UDim2.new(0.1, 0, 0.1, 0)
+amountTextBox.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+amountTextBox.PlaceholderText = "Amount to steal"
+amountTextBox.Font = Enum.Font.GothamBold
+amountTextBox.TextSize = 16
+amountTextBox.TextColor3 = Color3.fromRGB(0, 0, 0)
+amountTextBox.Parent = Frame
 
--- Event for Detecting Player Input
-inputBox.FocusLost:Connect(function(enterPressed)
-    if enterPressed and inputBox.Text ~= "" then
-        -- Get the AI's response
-        local playerMessage = inputBox.Text
-        local aiResponse = getResponse(playerMessage)
+-- Create Button to steal time
+local stealButton = Instance.new("TextButton")
+stealButton.Size = UDim2.new(0.8, 0, 0.2, 0)
+stealButton.Position = UDim2.new(0.1, 0, 0.35, 0)
+stealButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+stealButton.Text = "Steal from Admin"
+stealButton.Font = Enum.Font.GothamBold
+stealButton.TextSize = 16
+stealButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+stealButton.Parent = Frame
 
-        -- Display the AI's response
-        responseLabel.Text = aiResponse
+-- Create Button to add Infinity symbol
+local addInfButton = Instance.new("TextButton")
+addInfButton.Size = UDim2.new(0.8, 0, 0.2, 0)
+addInfButton.Position = UDim2.new(0.1, 0, 0.65, 0) -- Position below the steal button
+addInfButton.BackgroundColor3 = Color3.fromRGB(0, 255, 0) -- Green color
+addInfButton.Text = "Add Infinity"
+addInfButton.Font = Enum.Font.GothamBold
+addInfButton.TextSize = 16
+addInfButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+addInfButton.Parent = Frame
 
-        -- Clear the input box
-        inputBox.Text = ""
-    end
-end)
+-- Create Close Button
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0.1, 0, 0.1, 0)
+closeButton.Position = UDim2.new(0.9, 0, 0, 0)
+closeButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+closeButton.Text = "X"
+closeButton.Font = Enum.Font.GothamBold
+closeButton.TextSize = 16
+closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+closeButton.Parent = Frame
+
+-- Create Static Rainbow TextLabel for V1
+local rainbowLabel = Instance.new("TextLabel")
+rainbowLabel.Size = UDim2.new(0.8, 0, 0.1, 0)
+rainbowLabel.Position = UDim2.new(0.1, 0, 0.85, 0) -- Position under the Add Infinity button
+rainbowLabel.BackgroundTransparency = 1
+rainbowLabel.TextColor3 = Color3.fromRGB(255, 0, 0) -- Red color for "V1"
+rainbowLabel.Text = "V1"
+rainbowLabel.Font = Enum.Font.GothamBold
+rainbowLabel.TextSize = 30
+rainbowLabel.Parent = Frame
+
+-- Create TextLabel to display stolen amount
+local stolenAmountLabel = Instance.new("TextLabel")
+stolenAmountLabel.Size = UDim2.new(0.8, 0, 0.1, 0)
+stolenAmountLabel.Position = UDim2.new(0.1, 0, 0.5, 0)
+stolenAmountLabel.BackgroundTransparency = 1
+stolenAmountLabel.TextColor3 = Color3.fromRGB(255, 255, 0) -- Yellow color for displayed amount
+stolenAmountLabel.Text = "Stolen Amount: 0"
+stolenAmountLabel.Font = Enum.Font.GothamBold
+stolenAmountLabel.TextSize = 20
+stolenAmountLabel.Parent = Frame
