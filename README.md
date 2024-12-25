@@ -1,44 +1,66 @@
 -- LocalScript: StarterPlayerScripts
 
-local player = game.Players.LocalPlayer
-local screenGui = Instance.new("ScreenGui", player.PlayerGui)
-screenGui.Name = "NukeButtonGUI"
+-- Create the Screen GUI
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "ChatAI"
+screenGui.Parent = game.Players.LocalPlayer:WaitForChild("PlayerGui")
 
--- Create the red button
-local nukeButton = Instance.new("TextButton", screenGui)
-nukeButton.Size = UDim2.new(0.2, 0, 0.1, 0)
-nukeButton.Position = UDim2.new(0.4, 0, 0.8, 0)
-nukeButton.Text = "NUKE"
-nukeButton.TextScaled = true
-nukeButton.BackgroundColor3 = Color3.new(1, 0, 0) -- Red
-nukeButton.TextColor3 = Color3.new(1, 1, 1) -- White text
-nukeButton.BorderSizePixel = 2
-nukeButton.BorderColor3 = Color3.new(0.5, 0, 0) -- Darker border
+-- Create the Frame for the Chatbox
+local chatFrame = Instance.new("Frame", screenGui)
+chatFrame.Size = UDim2.new(0.4, 0, 0.3, 0)
+chatFrame.Position = UDim2.new(0.3, 0, 0.6, 0)
+chatFrame.BackgroundColor3 = Color3.new(0.2, 0.2, 0.2)
+chatFrame.BorderSizePixel = 0
 
--- Function to fling all players
-local function flingEveryone()
-    for _, otherPlayer in pairs(game.Players:GetPlayers()) do
-        if otherPlayer.Character and otherPlayer.Character:FindFirstChild("HumanoidRootPart") then
-            local rootPart = otherPlayer.Character.HumanoidRootPart
-            -- Apply a large random force to fling the player
-            rootPart.Velocity = Vector3.new(
-                math.random(-1000, 1000), -- Random force on X
-                math.random(500, 1500),  -- Random upward force
-                math.random(-1000, 1000) -- Random force on Z
-            )
-        end
+-- Create a TextBox for Player Input
+local inputBox = Instance.new("TextBox", chatFrame)
+inputBox.Size = UDim2.new(0.8, 0, 0.2, 0)
+inputBox.Position = UDim2.new(0.1, 0, 0.7, 0)
+inputBox.PlaceholderText = "Type your message here..."
+inputBox.Text = ""
+inputBox.TextScaled = true
+inputBox.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+inputBox.TextColor3 = Color3.new(1, 1, 1)
+inputBox.BorderSizePixel = 0
+
+-- Create a TextLabel for AI Responses
+local responseLabel = Instance.new("TextLabel", chatFrame)
+responseLabel.Size = UDim2.new(0.8, 0, 0.5, 0)
+responseLabel.Position = UDim2.new(0.1, 0, 0.1, 0)
+responseLabel.Text = "Hello! How can I help you today?"
+responseLabel.TextScaled = true
+responseLabel.BackgroundColor3 = Color3.new(0.3, 0.3, 0.3)
+responseLabel.TextColor3 = Color3.new(1, 1, 1)
+responseLabel.BorderSizePixel = 0
+
+-- Function to Handle AI Responses
+local function getResponse(message)
+    local lowerMessage = string.lower(message) -- Convert message to lowercase for easier comparison
+
+    if string.find(lowerMessage, "hello") then
+        return "Hi there! How are you?"
+    elseif string.find(lowerMessage, "how are you") then
+        return "I'm just a script, but I'm here to help!"
+    elseif string.find(lowerMessage, "help") then
+        return "What do you need help with?"
+    elseif string.find(lowerMessage, "bye") then
+        return "Goodbye! Have a great day!"
+    else
+        return "I'm sorry, I don't understand. Can you rephrase?"
     end
 end
 
--- Button click event
-nukeButton.MouseButton1Click:Connect(function()
-    -- Change button appearance on click
-    nukeButton.BackgroundColor3 = Color3.new(0.5, 0, 0) -- Darker red
-    nukeButton.Size = UDim2.new(0.18, 0, 0.09, 0) -- Slightly smaller
-    flingEveryone()
+-- Event for Detecting Player Input
+inputBox.FocusLost:Connect(function(enterPressed)
+    if enterPressed and inputBox.Text ~= "" then
+        -- Get the AI's response
+        local playerMessage = inputBox.Text
+        local aiResponse = getResponse(playerMessage)
 
-    -- Wait and reset the button appearance
-    task.wait(0.2)
-    nukeButton.BackgroundColor3 = Color3.new(1, 0, 0) -- Original red
-    nukeButton.Size = UDim2.new(0.2, 0, 0.1, 0) -- Original size
+        -- Display the AI's response
+        responseLabel.Text = aiResponse
+
+        -- Clear the input box
+        inputBox.Text = ""
+    end
 end)
